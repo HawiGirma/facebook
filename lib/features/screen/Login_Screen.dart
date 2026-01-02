@@ -45,8 +45,23 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = e.toString();
+        if (errorMessage.contains('Firebase is not initialized')) {
+          errorMessage = 'Firebase is not configured. Please check your Firebase setup.';
+        } else if (errorMessage.contains('user-not-found')) {
+          errorMessage = 'No account found with this email. Please sign up first.';
+        } else if (errorMessage.contains('wrong-password')) {
+          errorMessage = 'Incorrect password. Please try again.';
+        } else if (errorMessage.contains('invalid-email')) {
+          errorMessage = 'Invalid email address. Please check and try again.';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     } finally {
@@ -69,8 +84,24 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = e.toString();
+        if (errorMessage.contains('canceled')) {
+          // User canceled - don't show error
+          return;
+        } else if (errorMessage.contains('invalid_client') || errorMessage.contains('401')) {
+          errorMessage = 'Google Sign-In is not configured. Please check your Web Client ID in Firebase Console.';
+        } else if (errorMessage.contains('popup_closed')) {
+          errorMessage = 'Sign-in was interrupted. Please try again.';
+        } else if (errorMessage.contains('Firebase is not initialized')) {
+          errorMessage = 'Firebase is not configured. Please check your Firebase setup.';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
         );
       }
     } finally {

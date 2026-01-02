@@ -78,14 +78,19 @@ class AuthService {
       );
 
       // Update display name
-      await credential.user?.updateDisplayName(name);
-      await credential.user?.reload();
+      if (name.isNotEmpty) {
+        await credential.user?.updateDisplayName(name);
+        await credential.user?.reload();
+      }
 
       return credential;
     } on FirebaseAuthException catch (e) {
+      // Log detailed error for debugging
+      print('Firebase Auth Error: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     } catch (e) {
-      throw 'An unexpected error occurred. Please try again.';
+      print('Unexpected error during sign up: $e');
+      throw 'An unexpected error occurred: ${e.toString()}';
     }
   }
 
@@ -100,12 +105,19 @@ class AuthService {
 
       if (googleUser == null) {
         // User canceled the sign-in
-        return null;
+        print('Google Sign-In was canceled by user');
+        throw 'Sign-in was canceled. Please try again.';
       }
 
       // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
+      // Check if we have the required tokens
+      if (googleAuth.idToken == null) {
+        print('Google Sign-In failed: No ID token received');
+        throw 'Google Sign-In failed: No authentication token received. Please check your Firebase configuration.';
+      }
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -115,7 +127,22 @@ class AuthService {
 
       // Sign in to Firebase with the Google credential
       return await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      print('Firebase Auth Error during Google Sign-In: ${e.code} - ${e.message}');
+      throw 'Google Sign-In failed: ${_handleAuthException(e)}';
     } catch (e) {
+      print('Error during Google Sign-In: $e');
+      final errorString = e.toString();
+      
+      // Provide helpful error messages
+      if (errorString.contains('invalid_client') || errorString.contains('401')) {
+        throw 'Google Sign-In configuration error. Please check your Web Client ID in web/index.html (for web) or google-services.json (for Android).';
+      } else if (errorString.contains('popup_closed')) {
+        throw 'Sign-in popup was closed. Please try again and complete the sign-in process.';
+      } else if (errorString.contains('network')) {
+        throw 'Network error. Please check your internet connection and try again.';
+      }
+      
       throw 'Failed to sign in with Google: ${e.toString()}';
     }
   }

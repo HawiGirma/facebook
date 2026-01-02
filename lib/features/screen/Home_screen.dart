@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:facebook/features/services/auth_service.dart';
 import 'package:facebook/features/screen/Login_Screen.dart';
+import 'package:facebook/features/screen/Profile_Screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,8 +59,17 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: <Widget>[
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
           IconButton(onPressed: () {}, icon: Icon(Icons.message)),
-          PopupMenuButton(
+          IconButton(
             icon: Icon(Icons.account_circle),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+          ),
+          PopupMenuButton(
+            icon: Icon(Icons.more_vert),
             itemBuilder: (context) => [
               PopupMenuItem(
                 child: Row(
@@ -80,44 +90,53 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // User Info Section
             if (_user != null)
-              Container(
-                padding: EdgeInsets.all(16),
-                color: Colors.grey[100],
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: _user!.photoURL != null
-                          ? NetworkImage(_user!.photoURL!)
-                          : null,
-                      child: _user!.photoURL == null
-                          ? Icon(Icons.person, size: 30)
-                          : null,
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _user!.displayName ?? 'User',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            _user!.email ?? '',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  color: Colors.grey[100],
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundImage: _user!.photoURL != null
+                            ? NetworkImage(_user!.photoURL!)
+                            : null,
+                        child: _user!.photoURL == null
+                            ? Icon(Icons.person, size: 30)
+                            : null,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _user!.displayName ?? 'User',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              _user!.email ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, color: Colors.grey[600]),
+                    ],
+                  ),
                 ),
               ),
             SizedBox(height: 16),
