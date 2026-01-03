@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   // GoogleSignIn will use the clientId from web/index.html meta tag for web
@@ -85,11 +86,15 @@ class AuthService {
 
       return credential;
     } on FirebaseAuthException catch (e) {
-      // Log detailed error for debugging
-      print('Firebase Auth Error: ${e.code} - ${e.message}');
+      // Log detailed error for debugging (only in debug mode)
+      if (kDebugMode) {
+        print('Firebase Auth Error: ${e.code} - ${e.message}');
+      }
       throw _handleAuthException(e);
     } catch (e) {
-      print('Unexpected error during sign up: $e');
+      if (kDebugMode) {
+        print('Unexpected error during sign up: $e');
+      }
       throw 'An unexpected error occurred: ${e.toString()}';
     }
   }
@@ -105,7 +110,9 @@ class AuthService {
 
       if (googleUser == null) {
         // User canceled the sign-in
-        print('Google Sign-In was canceled by user');
+        if (kDebugMode) {
+          print('Google Sign-In was canceled by user');
+        }
         throw 'Sign-in was canceled. Please try again.';
       }
 
@@ -115,7 +122,9 @@ class AuthService {
 
       // Check if we have the required tokens
       if (googleAuth.idToken == null) {
-        print('Google Sign-In failed: No ID token received');
+        if (kDebugMode) {
+          print('Google Sign-In failed: No ID token received');
+        }
         throw 'Google Sign-In failed: No authentication token received. Please check your Firebase configuration.';
       }
 
@@ -128,22 +137,61 @@ class AuthService {
       // Sign in to Firebase with the Google credential
       return await _auth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
-      print('Firebase Auth Error during Google Sign-In: ${e.code} - ${e.message}');
+      if (kDebugMode) {
+        print(
+          'Firebase Auth Error during Google Sign-In: ${e.code} - ${e.message}',
+        );
+      }
       throw 'Google Sign-In failed: ${_handleAuthException(e)}';
     } catch (e) {
-      print('Error during Google Sign-In: $e');
+      if (kDebugMode) {
+        print('Error during Google Sign-In: $e');
+      }
       final errorString = e.toString();
-      
+
       // Provide helpful error messages
-      if (errorString.contains('invalid_client') || errorString.contains('401')) {
+      if (errorString.contains('invalid_client') ||
+          errorString.contains('401')) {
         throw 'Google Sign-In configuration error. Please check your Web Client ID in web/index.html (for web) or google-services.json (for Android).';
       } else if (errorString.contains('popup_closed')) {
         throw 'Sign-in popup was closed. Please try again and complete the sign-in process.';
       } else if (errorString.contains('network')) {
         throw 'Network error. Please check your internet connection and try again.';
       }
-      
+
       throw 'Failed to sign in with Google: ${e.toString()}';
+    }
+  }
+
+  // Update user profile
+  Future<void> updateProfile({String? displayName, String? photoURL}) async {
+    if (!isFirebaseInitialized) {
+      throw 'Firebase is not initialized. Please configure Firebase first.';
+    }
+
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw 'No user is currently signed in.';
+    }
+
+    try {
+      if (displayName != null && displayName.isNotEmpty) {
+        await user.updateDisplayName(displayName);
+      }
+      if (photoURL != null && photoURL.isNotEmpty) {
+        await user.updatePhotoURL(photoURL);
+      }
+      await user.reload();
+    } on FirebaseAuthException catch (e) {
+      if (kDebugMode) {
+        print('Firebase Auth Error: ${e.code} - ${e.message}');
+      }
+      throw _handleAuthException(e);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating profile: $e');
+      }
+      throw 'Failed to update profile: ${e.toString()}';
     }
   }
 
@@ -177,7 +225,7 @@ class AuthService {
       case 'too-many-requests':
         return 'Too many requests. Please try again later.';
       case 'operation-not-allowed':
-        return 'This operation is not allowed.';
+        return 'This operation is not allowed. This may be because the given sign-in provider is disabled for this Firebase project. Enable it in the Firebase console, under the sign-in method tab of the Auth section.';
       default:
         return 'An error occurred: ${e.message}';
     }
