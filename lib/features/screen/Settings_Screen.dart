@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/utils/widget_utils.dart';
 import 'package:facebook/features/screen/Login_Screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -27,11 +28,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error signing out: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        WidgetUtils.showErrorSnackBar(
+          context,
+          'Error signing out: ${e.toString()}',
         );
       }
     }
@@ -40,18 +39,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 2, 109, 196),
-            fontFamily: 'FacebookSans',
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
+      appBar: WidgetUtils.buildSubtitleAppBar(
+        title: 'Settings',
+        context: context,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),

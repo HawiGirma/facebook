@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/utils/app_constants.dart';
 import 'package:facebook/features/screen/Login_Screen.dart';
 import 'package:facebook/features/screen/Home_screen.dart';
 
@@ -21,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _checkAuthentication() async {
     // Wait for Firebase to initialize and check auth state
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(AppConstants.splashDelay);
 
     if (!mounted) return;
 
@@ -62,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> {
             // Loading indicator
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(
-                Color.fromARGB(255, 2, 109, 196),
+                AppConstants.primaryColor,
               ),
             ),
           ],

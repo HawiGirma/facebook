@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:facebook/features/utils/app_constants.dart';
+import 'package:facebook/features/utils/widget_utils.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -6,18 +8,9 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Notifications',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 2, 109, 196),
-            fontFamily: 'FacebookSans',
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
+      appBar: WidgetUtils.buildSubtitleAppBar(
+        title: 'Notifications',
+        context: context,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
@@ -43,7 +36,7 @@ class NotificationScreen extends StatelessWidget {
                   child: Text(
                     'See All',
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 2, 109, 196),
+                      color: AppConstants.primaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

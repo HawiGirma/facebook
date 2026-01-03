@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:facebook/features/services/unsplash_image_service.dart';
+import 'package:facebook/features/utils/app_constants.dart';
+import 'package:facebook/features/utils/image_widget_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class HomeFeedWidget extends StatefulWidget {
@@ -28,7 +30,6 @@ class _HomeFeedWidgetState extends State<HomeFeedWidget> {
 
   List<Map<String, String>> _generatePosts({int count = 5}) {
     final postImages = UnsplashImageService.getPostImages(count: count);
-    final descriptions = _getPostDescriptions();
     final random = DateTime.now().millisecondsSinceEpoch;
 
     return List.generate(count, (index) {
@@ -36,29 +37,10 @@ class _HomeFeedWidgetState extends State<HomeFeedWidget> {
       _likeCounts[index] = (random + index) % 50;
       return {
         'imageUrl': postImages[index],
-        'description': descriptions[(random + index) % descriptions.length],
+        'description': AppConstants.postDescriptions[
+            (random + index) % AppConstants.postDescriptions.length],
       };
     });
-  }
-
-  List<String> _getPostDescriptions() {
-    return [
-      'Beautiful sunset today! 🌅 Nature never fails to amaze me.',
-      'Just finished reading an amazing book. Highly recommend it!',
-      'Coffee and coding - the perfect morning routine ☕',
-      'Weekend vibes! Time to relax and recharge.',
-      'New project in the works. Excited to share it soon!',
-      'Grateful for all the amazing people in my life ❤️',
-      'Working on something special. Stay tuned!',
-      'Life is beautiful when you appreciate the little things.',
-      'Just discovered this amazing place. You have to visit!',
-      'Productivity mode: ON 💪 Let\'s make today count!',
-      'Sometimes the best moments are the simplest ones.',
-      'Dream big, work hard, stay focused. That\'s the plan!',
-      'Nature is the best therapy. Feeling refreshed!',
-      'New day, new opportunities. Let\'s make it great!',
-      'Sharing some thoughts and positive energy today ✨',
-    ];
   }
 
   void _preloadImages() {
@@ -135,7 +117,7 @@ class _HomeFeedWidgetState extends State<HomeFeedWidget> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 2, 109, 196),
+                          color: AppConstants.primaryColor,
                         ),
                       ),
                     ),
@@ -172,27 +154,10 @@ class _HomeFeedWidgetState extends State<HomeFeedWidget> {
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: _storyImages[index],
-                      fit: BoxFit.cover,
-                      memCacheWidth: 240,
-                      memCacheHeight: 320,
-                      maxWidthDiskCache: 240,
-                      maxHeightDiskCache: 320,
-                      fadeInDuration: Duration.zero,
-                      fadeOutDuration: Duration.zero,
-                      placeholderFadeInDuration: Duration.zero,
-                      useOldImageOnUrlChange: true,
-                      placeholder: (context, url) =>
-                          Container(color: Colors.grey[200]),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey[300],
-                        child: Icon(Icons.error, size: 30),
-                      ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: ImageWidgetUtils.buildStoryImage(_storyImages[index]),
                     ),
-                  ),
                 );
               },
             ),
@@ -279,36 +244,7 @@ class _HomeFeedWidgetState extends State<HomeFeedWidget> {
               ),
             ),
           // Post Image
-          CachedNetworkImage(
-            imageUrl: imageUrl,
-            width: double.infinity,
-            fit: BoxFit.cover,
-            memCacheWidth: 600,
-            memCacheHeight: 400,
-            maxWidthDiskCache: 600,
-            maxHeightDiskCache: 400,
-            fadeInDuration: Duration.zero,
-            fadeOutDuration: Duration.zero,
-            placeholderFadeInDuration: Duration.zero,
-            useOldImageOnUrlChange: true,
-            placeholder: (context, url) =>
-                Container(height: 300, color: Colors.grey[200]),
-            errorWidget: (context, url, error) => Container(
-              height: 300,
-              color: Colors.grey[300],
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error, size: 50, color: Colors.grey[600]),
-                  SizedBox(height: 8),
-                  Text(
-                    'Failed to load image',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          ImageWidgetUtils.buildPostImage(imageUrl),
           // Post Actions
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),

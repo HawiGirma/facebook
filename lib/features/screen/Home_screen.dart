@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/utils/app_constants.dart';
+import 'package:facebook/features/utils/widget_utils.dart';
 import 'package:facebook/features/screen/Login_Screen.dart';
 import 'package:facebook/features/screen/Profile_Screen.dart';
 import 'package:facebook/features/screen/Notification_Screen.dart';
@@ -65,11 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error signing out: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+        WidgetUtils.showErrorSnackBar(
+          context,
+          'Error signing out: ${e.toString()}',
         );
       }
     }
@@ -79,15 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _getAppBarTitle(),
-          style: TextStyle(
-            color: const Color.fromARGB(255, 2, 109, 196),
-            fontFamily: 'FacebookSans',
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
-          ),
-        ),
+        title: Text(_getAppBarTitle(), style: AppConstants.appBarTitleStyle),
         actions: <Widget>[
           IconButton(onPressed: () {}, icon: Icon(Icons.search)),
           IconButton(onPressed: () {}, icon: Icon(Icons.message)),
@@ -132,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: const Color.fromARGB(255, 2, 109, 196),
+        selectedItemColor: AppConstants.primaryColor,
         unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

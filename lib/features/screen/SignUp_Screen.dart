@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/utils/app_constants.dart';
+import 'package:facebook/features/utils/error_handler.dart';
+import 'package:facebook/features/utils/widget_utils.dart';
 import 'package:facebook/features/screen/Login_Screen.dart';
 import 'package:facebook/features/screen/Home_screen.dart';
 
@@ -50,31 +53,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
       } catch (e) {
         if (mounted) {
-          // Show user-friendly error message
-          String errorMessage = e.toString();
-          if (errorMessage.contains('Firebase is not initialized')) {
-            errorMessage =
-                'Firebase is not configured. Please check your Firebase setup.';
-          } else if (errorMessage.contains('operation-not-allowed')) {
-            errorMessage =
-                'Email/Password sign-up is not enabled. Please enable it in Firebase Console under Authentication > Sign-in method.';
-          } else if (errorMessage.contains('email-already-in-use')) {
-            errorMessage =
-                'This email is already registered. Please sign in instead.';
-          } else if (errorMessage.contains('weak-password')) {
-            errorMessage =
-                'Password is too weak. Please use a stronger password.';
-          } else if (errorMessage.contains('invalid-email')) {
-            errorMessage = 'Invalid email address. Please check and try again.';
-          }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 4),
-            ),
-          );
+          final errorMessage = ErrorHandler.getErrorMessage(e.toString());
+          WidgetUtils.showErrorSnackBar(context, errorMessage);
         }
       } finally {
         if (mounted) {
@@ -97,28 +77,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (e) {
       if (mounted) {
-        String errorMessage = e.toString();
-        if (errorMessage.contains('canceled')) {
-          // User canceled - don't show error
-          return;
-        } else if (errorMessage.contains('invalid_client') ||
-            errorMessage.contains('401')) {
-          errorMessage =
-              'Google Sign-In is not configured. Please check your Web Client ID in Firebase Console.';
-        } else if (errorMessage.contains('popup_closed')) {
-          errorMessage = 'Sign-in was interrupted. Please try again.';
-        } else if (errorMessage.contains('Firebase is not initialized')) {
-          errorMessage =
-              'Firebase is not configured. Please check your Firebase setup.';
+        final errorMessage = ErrorHandler.getErrorMessage(e.toString());
+        if (ErrorHandler.shouldShowError(e.toString())) {
+          WidgetUtils.showErrorSnackBar(context, errorMessage);
         }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
-        );
       }
     } finally {
       if (mounted) {
@@ -145,7 +107,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Text(
                     'Create Account',
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 2, 109, 196),
+                      color: AppConstants.primaryColor,
                       fontFamily: 'FacebookSans',
                       fontWeight: FontWeight.bold,
                       fontSize: 32,
@@ -292,7 +254,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 2, 109, 196),
+                    backgroundColor: AppConstants.primaryColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

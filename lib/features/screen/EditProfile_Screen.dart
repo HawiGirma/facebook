@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/utils/app_constants.dart';
+import 'package:facebook/features/utils/widget_utils.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -42,24 +44,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Profile updated successfully!'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        WidgetUtils.showSuccessSnackBar(context, 'Profile updated successfully!');
         Navigator.pop(context, true); // Return true to indicate success
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error updating profile: ${e.toString()}'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+        WidgetUtils.showErrorSnackBar(context, 'Error updating profile: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -71,18 +61,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 2, 109, 196),
-            fontFamily: 'FacebookSans',
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
+      appBar: WidgetUtils.buildSubtitleAppBar(
+        title: 'Edit Profile',
+        context: context,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
@@ -117,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           right: 0,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 2, 109, 196),
+                              color: AppConstants.primaryColor,
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 2),
                             ),
@@ -140,7 +121,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Text(
                       'Change Profile Picture',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 2, 109, 196),
+                        color: AppConstants.primaryColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -215,7 +196,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _updateProfile,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 2, 109, 196),
+                  backgroundColor: AppConstants.primaryColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(

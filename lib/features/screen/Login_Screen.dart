@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/utils/app_constants.dart';
+import 'package:facebook/features/utils/error_handler.dart';
+import 'package:facebook/features/utils/widget_utils.dart';
 import 'package:facebook/features/screen/SignUp_Screen.dart';
 import 'package:facebook/features/screen/Home_screen.dart';
 
@@ -45,24 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        String errorMessage = e.toString();
-        if (errorMessage.contains('Firebase is not initialized')) {
-          errorMessage = 'Firebase is not configured. Please check your Firebase setup.';
-        } else if (errorMessage.contains('user-not-found')) {
-          errorMessage = 'No account found with this email. Please sign up first.';
-        } else if (errorMessage.contains('wrong-password')) {
-          errorMessage = 'Incorrect password. Please try again.';
-        } else if (errorMessage.contains('invalid-email')) {
-          errorMessage = 'Invalid email address. Please check and try again.';
+        final errorMessage = ErrorHandler.getErrorMessage(e.toString());
+        if (ErrorHandler.shouldShowError(e.toString())) {
+          WidgetUtils.showErrorSnackBar(context, errorMessage);
         }
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
-        );
       }
     } finally {
       if (mounted) {
@@ -84,25 +73,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        String errorMessage = e.toString();
-        if (errorMessage.contains('canceled')) {
-          // User canceled - don't show error
-          return;
-        } else if (errorMessage.contains('invalid_client') || errorMessage.contains('401')) {
-          errorMessage = 'Google Sign-In is not configured. Please check your Web Client ID in Firebase Console.';
-        } else if (errorMessage.contains('popup_closed')) {
-          errorMessage = 'Sign-in was interrupted. Please try again.';
-        } else if (errorMessage.contains('Firebase is not initialized')) {
-          errorMessage = 'Firebase is not configured. Please check your Firebase setup.';
+        final errorMessage = ErrorHandler.getErrorMessage(e.toString());
+        if (ErrorHandler.shouldShowError(e.toString())) {
+          WidgetUtils.showErrorSnackBar(context, errorMessage);
         }
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
-        );
       }
     } finally {
       if (mounted) {
@@ -128,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text(
                     'Login',
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 2, 109, 196),
+                      color: AppConstants.primaryColor,
                       fontFamily: 'FacebookSans',
                       fontWeight: FontWeight.bold,
                       fontSize: 32,
@@ -229,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signIn,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 2, 109, 196),
+                    backgroundColor: AppConstants.primaryColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

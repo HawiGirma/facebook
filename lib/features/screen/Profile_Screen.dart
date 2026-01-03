@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/utils/app_constants.dart';
+import 'package:facebook/features/utils/widget_utils.dart';
 import 'package:facebook/features/screen/EditProfile_Screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -41,18 +43,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Profile',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 2, 109, 196),
-            fontFamily: 'FacebookSans',
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
+      appBar: WidgetUtils.buildSubtitleAppBar(
+        title: 'Profile',
+        context: context,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
@@ -66,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 2, 109, 196),
+                color: AppConstants.primaryColor,
                 image: _user?.photoURL != null
                     ? DecorationImage(
                         image: NetworkImage(_user!.photoURL!),
@@ -133,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icon(Icons.edit, color: Colors.white),
                       label: Text('Edit Profile'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 2, 109, 196),
+                        backgroundColor: AppConstants.primaryColor,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -150,9 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       label: Text('Add Story'),
                       style: OutlinedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 12),
-                        side: BorderSide(
-                          color: const Color.fromARGB(255, 2, 109, 196),
-                        ),
+                        side: BorderSide(color: AppConstants.primaryColor),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
