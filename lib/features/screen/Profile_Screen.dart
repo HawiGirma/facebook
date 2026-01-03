@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:facebook/features/services/auth_service.dart';
+import 'package:facebook/features/screen/EditProfile_Screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,7 +17,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _user = _authService.currentUser;
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    setState(() {
+      _user = _authService.currentUser;
+    });
+  }
+
+  Future<void> _navigateToEditProfile() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+    );
+
+    // Refresh user data if profile was updated
+    if (result == true) {
+      _loadUserData();
+    }
   }
 
   @override
@@ -75,10 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 4,
-                      ),
+                      border: Border.all(color: Colors.white, width: 4),
                     ),
                     child: CircleAvatar(
                       radius: 60,
@@ -94,25 +110,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Name
                   Text(
                     _user?.displayName ?? 'User Name',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 4),
                   // Email
                   Text(
                     _user?.email ?? '',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 24),
                 ],
               ),
             ),
-
             // Action Buttons
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -120,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: _navigateToEditProfile,
                       icon: Icon(Icons.edit, color: Colors.white),
                       label: Text('Edit Profile'),
                       style: ElevatedButton.styleFrom(
@@ -177,10 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     'Details',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 16),
                   _buildDetailRow(
@@ -222,27 +228,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                  _buildMenuOption(
-                    Icons.settings_outlined,
-                    'Settings',
-                    () {},
-                  ),
-                  Divider(),
-                  _buildMenuOption(
-                    Icons.privacy_tip_outlined,
-                    'Privacy',
-                    () {},
-                  ),
-                  Divider(),
-                  _buildMenuOption(
-                    Icons.help_outline,
-                    'Help & Support',
-                    () {},
-                  ),
-                ],
-              ),
             ),
 
             SizedBox(height: 24),
@@ -263,18 +248,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               SizedBox(height: 2),
               Text(
                 value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -282,31 +261,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
-
-  Widget _buildMenuOption(IconData icon, String title, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.grey[700], size: 24),
-            SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Icon(Icons.chevron_right, color: Colors.grey[400]),
-          ],
-        ),
-      ),
-    );
-  }
 }
-
-
