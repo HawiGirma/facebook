@@ -55,6 +55,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           if (errorMessage.contains('Firebase is not initialized')) {
             errorMessage =
                 'Firebase is not configured. Please check your Firebase setup.';
+          } else if (errorMessage.contains('operation-not-allowed')) {
+            errorMessage =
+                'Email/Password sign-up is not enabled. Please enable it in Firebase Console under Authentication > Sign-in method.';
           } else if (errorMessage.contains('email-already-in-use')) {
             errorMessage =
                 'This email is already registered. Please sign in instead.';
